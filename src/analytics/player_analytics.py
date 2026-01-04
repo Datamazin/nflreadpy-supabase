@@ -1,7 +1,5 @@
 """Analytics for player performance."""
 
-from typing import List, Optional
-
 import polars as pl
 
 from ..supabase_client import SupabaseClient
@@ -10,7 +8,7 @@ from ..supabase_client import SupabaseClient
 class PlayerAnalytics:
     """Analytics queries for player performance."""
 
-    def __init__(self, client: Optional[SupabaseClient] = None):
+    def __init__(self, client: SupabaseClient | None = None):
         """
         Initialize player analytics.
 
@@ -176,3 +174,50 @@ class PlayerAnalytics:
         )
 
         return game_log
+
+    def get_rushing_touchdowns(
+        self, season: int, week: int | None = None, min_tds: int = 1, limit: int = 50
+    ) -> pl.DataFrame:
+        """
+        Get rushing touchdowns for a specific season and optional week.
+
+        Args:
+            season: NFL season
+            week: Optional week number. If None, gets season totals.
+            min_tds: Minimum number of rushing TDs to include
+            limit: Number of results to return
+
+        Returns:
+            DataFrame with rushing touchdown leaders
+        """
+        # Build filters
+        filters = {"season": season}
+        if week is not None:
+            filters["week"] = week
+
+        # Query player stats
+        player_stats = self.client.query("player_stats", filters)
+
+        # Filter for players with rushing touchdowns
+        rushing_td_stats = player_stats.filter(
+            pl.col("rushing_tds").is_not_null() & (pl.col("rushing_tds") >= min_tds)
+        )
+
+        # Select relevant columns and sort
+        result = (
+            rushing_td_stats.select(
+                [
+                    "player_name",
+                    "team",
+                    "position",
+                    "week",
+                    "carries",
+                    "rushing_yards",
+                    "rushing_tds",
+                ]
+            )
+            .sort("rushing_tds", descending=True)
+            .head(limit)
+        )
+
+        return result
