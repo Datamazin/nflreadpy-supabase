@@ -1,7 +1,5 @@
 """Analytics for player performance."""
 
-from typing import List, Optional
-
 import polars as pl
 
 from ..supabase_client import SupabaseClient
@@ -10,7 +8,7 @@ from ..supabase_client import SupabaseClient
 class PlayerAnalytics:
     """Analytics queries for player performance."""
 
-    def __init__(self, client: Optional[SupabaseClient] = None):
+    def __init__(self, client: SupabaseClient | None = None):
         """
         Initialize player analytics.
 
@@ -113,8 +111,7 @@ class PlayerAnalytics:
         pbp = self.client.query("play_by_play", {"season": season})
 
         receiving = pbp.filter(
-            (pl.col("play_type") == "pass")
-            & (pl.col("receiver_player_name").is_not_null())
+            (pl.col("play_type") == "pass") & (pl.col("receiver_player_name").is_not_null())
         )
 
         receiving_stats = (
@@ -178,7 +175,7 @@ class PlayerAnalytics:
         return game_log
 
     def get_rushing_touchdowns(
-        self, season: int, week: Optional[int] = None, min_tds: int = 1, limit: int = 50
+        self, season: int, week: int | None = None, min_tds: int = 1, limit: int = 50
     ) -> pl.DataFrame:
         """
         Get rushing touchdowns for a specific season and optional week.

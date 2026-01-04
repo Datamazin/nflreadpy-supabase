@@ -19,9 +19,7 @@ def main():
 
     try:
         # Get rushing touchdowns for week 17
-        rushing_tds = analytics.get_rushing_touchdowns(
-            season=2025, week=17, min_tds=1, limit=50
-        )
+        rushing_tds = analytics.get_rushing_touchdowns(season=2025, week=17, min_tds=1, limit=50)
 
         if len(rushing_tds) == 0:
             print("\nNo rushing touchdown data found for 2025 season, week 17.")
@@ -38,7 +36,7 @@ def main():
             total_carries = rushing_tds["carries"].sum()
 
             print("\n" + "=" * 70)
-            print(f"Week 17 Totals:")
+            print("Week 17 Totals:")
             print(f"  Total Rushing TDs: {total_tds}")
             print(f"  Total Rushing Yards: {total_yards:,}")
             print(f"  Total Carries: {total_carries}")
