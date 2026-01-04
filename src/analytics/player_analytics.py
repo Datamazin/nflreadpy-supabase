@@ -111,7 +111,8 @@ class PlayerAnalytics:
         pbp = self.client.query("play_by_play", {"season": season})
 
         receiving = pbp.filter(
-            (pl.col("play_type") == "pass") & (pl.col("receiver_player_name").is_not_null())
+            (pl.col("play_type") == "pass")
+            & (pl.col("receiver_player_name").is_not_null())
         )
 
         receiving_stats = (
